@@ -8,7 +8,11 @@ To run this project successfully you will need to have docker-compose installed.
 ```
 docker-compose up
 ```
-It will deploy the *database* and the *application*.
+It will deploy the *database* with the defined list of pokemons at `./data.pokemon.json` and runs the *application*.
+If you want to skip the application at `docker-compose`, you can also run:
+```
+docker-compose up mongoimport database
+```
 
 **IMPORTANT:** Keep in mind that the current database has a default configuration, so if you want to use it on production you must reconfigure it, enable authentication and change the default username and password.
 

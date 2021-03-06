@@ -1,5 +1,13 @@
 version: "3.8"
 services:
+
+  mongoimport:
+    image: library/mongo:latest
+    container_name: database-import
+    volumes:
+      - ./data/pokemon.json:/src/data/pokemon.json
+    command: mongoimport --host database --db pokemon --collection pokemon --file /src/data/pokemon.json --jsonArray
+
   database:
     image: mongo
     container_name: database
@@ -10,6 +18,8 @@ services:
       - /pokemon/database:/data/db
     ports:
       - 27017:27017
+    depends_on:
+      - mongoimport
     restart: unless-stopped
   pokemon:
     build: .
