@@ -1,26 +1,28 @@
 version: "3.8"
 services:
+  database:
+    image: mongo:latest
+    container_name: database
+    environment:
+      - MONGO_INITDB_DATABASE=pokemon
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+    ports:
+      - 27017:27017
 
   mongoimport:
     image: library/mongo:latest
     container_name: database-import
+    links:
+      - database
+    env_file:
+      - ./.env
     volumes:
       - ./data/pokemon.json:/src/data/pokemon.json
-    command: mongoimport --host database --db pokemon --collection pokemon --file /src/data/pokemon.json --jsonArray
+    command: mongoimport --host database --db pokemon --collection pokemon --username pokemon --password pokemon --file /src/data/pokemon.json --jsonArray
 
-  database:
-    image: mongo
-    container_name: database
-    environment:
-      - PUID=1000
-      - PGID=1000
-    volumes:
-      - /pokemon/database:/data/db
-    ports:
-      - 27017:27017
-    depends_on:
-      - mongoimport
-    restart: unless-stopped
   pokemon:
     build: .
     ports:
