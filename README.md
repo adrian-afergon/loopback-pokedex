@@ -3,6 +3,15 @@
 This application is generated using [LoopBack 4 CLI](https://loopback.io/doc/en/lb4/Command-line-interface.html) with the
 [initial project layout](https://loopback.io/doc/en/lb4/Loopback-application-layout.html).
 
+## Pre-requisites
+To run this project successfully you will need to have docker-compose installed. To make it works you only need to execute the folowing command:
+```
+docker-compose up
+```
+It will deploy the *database* and the *application*.
+
+**IMPORTANT:** Keep in mind that the current database has a default configuration, so if you want to use it on production you must reconfigure it, enable authentication and change the default username and password.
+
 ## Install dependencies
 
 By default, dependencies were installed when this application was generated.
