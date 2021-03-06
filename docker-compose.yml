@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  database:
+    image: mongo
+    container_name: database
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /pokemon/database:/data/db
+    ports:
+      - 27017:27017
+    restart: unless-stopped
+  pokemon:
+    build: .
+    ports:
+      - 3000:3000
+    depends_on:
+      - database
+    restart: unless-stopped
