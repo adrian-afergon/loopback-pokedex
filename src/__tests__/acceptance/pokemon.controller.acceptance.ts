@@ -33,7 +33,7 @@ describe('PokemonController', () => {
   it('invokes GET /pokemon/name/{name} existent pokemon name', async () => {
     const pokemonName = 'bulbasaur';
     const res = await client.get(`/pokemon/name/${pokemonName}`).expect(200);
-    expect(res.body.name).to.eql(pokemonName);
+    expect(res.body.name).to.eql('Bulbasaur');
   });
 
   it('invokes GET /pokemon/name/{name} for an existent pokemon without case sensitive ', async () => {
