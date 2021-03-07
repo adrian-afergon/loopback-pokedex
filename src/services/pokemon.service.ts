@@ -1,8 +1,7 @@
-import {injectable, /* inject, */ BindingScope} from '@loopback/core';
-import {Filter, repository} from '@loopback/repository';
+import {injectable, BindingScope} from '@loopback/core';
+import {EntityNotFoundError, Filter, repository} from '@loopback/repository';
 import {PokemonRepository} from '../repositories';
 import {Pokemon} from '../models';
-import {HttpErrors} from '@loopback/rest';
 
 @injectable({scope: BindingScope.TRANSIENT})
 export class PokemonService {
@@ -15,22 +14,27 @@ export class PokemonService {
     return this.pokemonRepository.find(filter);
   }
 
-  findById(id: string): Promise<Pokemon | null> {
-    return this.pokemonRepository.findOne({where: {id}});
+  async findById(id: string): Promise<Pokemon> {
+    const pokemon = await this.pokemonRepository.findOne({where: {id}});
+    if (!pokemon) {
+      throw new EntityNotFoundError(Pokemon, id);
+    }
+    return pokemon;
   }
 
-  findByName(name: string): Promise<Pokemon | null> {
+  async findByName(name: string): Promise<Pokemon> {
     const nameInsensitiveCase = new RegExp(name, 'i');
-    return this.pokemonRepository.findOne({
+    const pokemon = await this.pokemonRepository.findOne({
       where: {name: {like: nameInsensitiveCase}},
     });
+    if (!pokemon) {
+      throw new EntityNotFoundError(Pokemon, name);
+    }
+    return pokemon;
   }
 
   async markFavourite(id: string) {
     const pokemon = await this.findById(id);
-    if (!pokemon) {
-      throw new HttpErrors.NotFound();
-    }
     await this.pokemonRepository.update(
       new Pokemon({
         ...pokemon,
@@ -41,9 +45,6 @@ export class PokemonService {
 
   async unmarkFavourite(id: string) {
     const pokemon = await this.findById(id);
-    if (!pokemon) {
-      throw new HttpErrors.NotFound();
-    }
     await this.pokemonRepository.update(
       new Pokemon({
         ...pokemon,

@@ -1,4 +1,8 @@
-import {Filter, FilterExcludingWhere} from '@loopback/repository';
+import {
+  EntityNotFoundError,
+  Filter,
+  FilterExcludingWhere,
+} from '@loopback/repository';
 import {
   param,
   get,
@@ -54,11 +58,14 @@ export class PokemonController {
     @param.filter(Pokemon, {exclude: 'where'})
     filter?: FilterExcludingWhere<Pokemon>,
   ): Promise<Pokemon> {
-    const pokemon = await this.pokemonService.findById(id);
-    if (pokemon) {
-      return pokemon;
-    } else {
-      throw new HttpErrors.NotFound();
+    try {
+      return await this.pokemonService.findById(id);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new HttpErrors.NotFound();
+      } else {
+        throw new HttpErrors.InternalServerError();
+      }
     }
   }
 
@@ -76,11 +83,14 @@ export class PokemonController {
     @param.filter(Pokemon, {exclude: 'where'})
     filter?: FilterExcludingWhere<Pokemon>,
   ): Promise<Pokemon> {
-    const pokemon = await this.pokemonService.findByName(name);
-    if (pokemon) {
-      return pokemon;
-    } else {
-      throw new HttpErrors.NotFound();
+    try {
+      return await this.pokemonService.findByName(name);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new HttpErrors.NotFound();
+      } else {
+        throw new HttpErrors.InternalServerError();
+      }
     }
   }
 
@@ -98,10 +108,18 @@ export class PokemonController {
     ) {
       throw new HttpErrors.NotFound();
     }
-    if (action === FavouriteActions.Mark) {
-      await this.pokemonService.markFavourite(id);
-    } else {
-      await this.pokemonService.unmarkFavourite(id);
+    try {
+      if (action === FavouriteActions.Mark) {
+        await this.pokemonService.markFavourite(id);
+      } else {
+        await this.pokemonService.unmarkFavourite(id);
+      }
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new HttpErrors.NotFound();
+      } else {
+        throw new HttpErrors.InternalServerError();
+      }
     }
   }
 }
