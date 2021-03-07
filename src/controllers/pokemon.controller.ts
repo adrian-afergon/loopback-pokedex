@@ -9,6 +9,11 @@ import {
 import {Pokemon} from '../models';
 import {PokemonRepository} from '../repositories';
 
+export enum FavouriteActions {
+  mark = 'mark',
+  unmark = 'unmark',
+}
+
 export class PokemonController {
   constructor(
     @repository(PokemonRepository)
