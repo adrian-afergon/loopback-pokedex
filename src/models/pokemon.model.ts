@@ -1,6 +1,6 @@
 import {Entity, model, property} from '@loopback/repository';
 
-@model({settings: {strict: false}})
+@model({settings: {strict: false}, name: 'pokemon'})
 export class Pokemon extends Entity {
   @property({
     type: 'string',
@@ -90,7 +90,7 @@ export class Pokemon extends Entity {
   })
   previousEvolutions?: object;
 
-  [prop: string]: string|number|object|boolean|undefined;
+  [prop: string]: string | number | object | boolean | undefined;
 
   constructor(data?: Partial<Pokemon>) {
     super(data);
