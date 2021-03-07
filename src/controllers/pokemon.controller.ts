@@ -5,9 +5,15 @@ import {
   getModelSchemaRef,
   response,
   HttpErrors,
+  put,
 } from '@loopback/rest';
 import {Pokemon} from '../models';
 import {PokemonRepository} from '../repositories';
+
+export enum FavouriteActions {
+  Mark = 'mark',
+  Unmark = 'unmark',
+}
 
 export class PokemonController {
   constructor(
@@ -78,5 +84,32 @@ export class PokemonController {
     } else {
       throw new HttpErrors.NotFound();
     }
+  }
+
+  @put('/pokemon/{id}/favourite/{action}')
+  @response(204, {
+    description: 'Pokemon PUT success',
+  })
+  async markAsFavouriteById(
+    @param.path.string('id') id: string,
+    @param.path.string('action') action: FavouriteActions,
+  ): Promise<void> {
+    if (
+      action !== FavouriteActions.Mark &&
+      action !== FavouriteActions.Unmark
+    ) {
+      throw new HttpErrors.NotFound();
+    }
+    const pokemon = await this.pokemonRepository.findOne({where: {id}});
+    // we handle it in two difference conditions in order to improve the performance
+    if (!pokemon) {
+      throw new HttpErrors.NotFound();
+    }
+    await this.pokemonRepository.update(
+      new Pokemon({
+        ...pokemon,
+        favourite: Boolean(action === FavouriteActions.Mark),
+      }),
+    );
   }
 }
