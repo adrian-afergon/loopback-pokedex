@@ -11,8 +11,8 @@ import {Pokemon} from '../models';
 import {PokemonRepository} from '../repositories';
 
 export enum FavouriteActions {
-  mark = 'mark',
-  unmark = 'unmark',
+  Mark = 'mark',
+  Unmark = 'unmark',
 }
 
 export class PokemonController {
@@ -95,8 +95,8 @@ export class PokemonController {
     @param.path.string('action') action: FavouriteActions,
   ): Promise<void> {
     if (
-      action !== FavouriteActions.mark &&
-      action !== FavouriteActions.unmark
+      action !== FavouriteActions.Mark &&
+      action !== FavouriteActions.Unmark
     ) {
       throw new HttpErrors.NotFound();
     }
@@ -108,7 +108,7 @@ export class PokemonController {
     await this.pokemonRepository.update(
       new Pokemon({
         ...pokemon,
-        favourite: Boolean(action === FavouriteActions.mark),
+        favourite: Boolean(action === FavouriteActions.Mark),
       }),
     );
   }
