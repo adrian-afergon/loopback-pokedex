@@ -1,1 +1,5 @@
-db.createUser({user: "pokemon", pwd: "pokemon", roles:[{role:"readWrite", db:"pokemon"}]})
+db.createUser({
+  user: 'pokemon',
+  pwd: 'pokemon',
+  roles: [{role: 'readWrite', db: 'pokemon'}],
+});
