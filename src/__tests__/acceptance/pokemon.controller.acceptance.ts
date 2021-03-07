@@ -29,4 +29,21 @@ describe('PokemonController', () => {
     const pokemonId = 'non-existent-id';
     await client.get(`/pokemon/${pokemonId}`).expect(404);
   });
+
+  it('invokes GET /pokemon/name/{name} existent pokemon name', async () => {
+    const pokemonName = 'bulbasaur';
+    const res = await client.get(`/pokemon/name/${pokemonName}`).expect(200);
+    expect(res.body.name).to.eql('Bulbasaur');
+  });
+
+  it('invokes GET /pokemon/name/{name} for an existent pokemon without case sensitive ', async () => {
+    const pokemonName = 'Bulbasaur';
+    const res = await client.get(`/pokemon/name/${pokemonName}`).expect(200);
+    expect(res.body.name).to.eql(pokemonName);
+  });
+
+  it('invokes GET /pokemon/name/{name} for a non existent pokemon name', async () => {
+    const pokemonName = 'Non-Existent-Pokemon';
+    await client.get(`/pokemon/name/${pokemonName}`).expect(404);
+  });
 });
