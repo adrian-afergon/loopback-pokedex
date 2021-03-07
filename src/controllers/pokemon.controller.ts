@@ -54,4 +54,26 @@ export class PokemonController {
       throw new HttpErrors.NotFound();
     }
   }
+
+  @get('/pokemon/name/{name}')
+  @response(200, {
+    description: 'Pokemon model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(Pokemon, {includeRelations: true}),
+      },
+    },
+  })
+  async findByName(
+    @param.path.string('name') name: string,
+    @param.filter(Pokemon, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Pokemon>,
+  ): Promise<Pokemon> {
+    const pokemon = await this.pokemonRepository.findOne({where: {name}});
+    if (pokemon) {
+      return pokemon;
+    } else {
+      throw new HttpErrors.NotFound();
+    }
+  }
 }
