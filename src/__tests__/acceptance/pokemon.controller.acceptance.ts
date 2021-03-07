@@ -16,6 +16,6 @@ describe('PokemonController', () => {
 
   it('invokes GET /pokemon', async () => {
     const res = await client.get('/pokemon').expect(200);
-    expect(res.body.pokemon).to.have.length(151);
+    expect(res.body).to.have.length(151);
   });
 });
