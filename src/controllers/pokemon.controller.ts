@@ -69,7 +69,10 @@ export class PokemonController {
     @param.filter(Pokemon, {exclude: 'where'})
     filter?: FilterExcludingWhere<Pokemon>,
   ): Promise<Pokemon> {
-    const pokemon = await this.pokemonRepository.findOne({where: {name}});
+    const nameInsensitiveCase = new RegExp(name, 'i');
+    const pokemon = await this.pokemonRepository.findOne({
+      where: {name: {like: nameInsensitiveCase}},
+    });
     if (pokemon) {
       return pokemon;
     } else {
