@@ -5,7 +5,14 @@ export class Pokemon extends Entity {
   @property({
     type: 'string',
     id: true,
-    generated: false,
+    generated: true,
+    required: true,
+    hidden: true,
+  })
+  _id: string;
+
+  @property({
+    type: 'string',
     required: true,
   })
   id: string;
