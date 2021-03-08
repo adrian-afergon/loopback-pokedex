@@ -20,6 +20,16 @@ describe('PokemonController', () => {
       const res = await client.get('/pokemon').expect(200);
       expect(res.body).to.have.length(151);
     });
+
+    it('returns a list of Pokemon with the given name', async () => {
+      const res = await client.get('/pokemon?name=Bulbasaur').expect(200);
+      expect(res.body).to.have.length(1);
+    });
+
+    it('returns a list of Pokemon with partial name', async () => {
+      const res = await client.get('/pokemon?name=saur').expect(200);
+      expect(res.body).to.have.length(3);
+    });
   });
 
   describe('invokes GET /pokemon/{id}', () => {

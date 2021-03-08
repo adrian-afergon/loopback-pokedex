@@ -16,8 +16,14 @@ export class PokemonService {
     public pokemonRepository: PokemonRepository,
   ) {}
 
-  findAll(filter?: PokemonQueryParams): Promise<Pokemon[]> {
-    return this.pokemonRepository.find();
+  findAll({name}: PokemonQueryParams): Promise<Pokemon[]> {
+    return name
+      ? this.pokemonRepository.find({
+          where: {
+            name: {like: new RegExp('.*' + name + '.*', 'i')},
+          },
+        })
+      : this.pokemonRepository.find();
   }
 
   async findById(id: string): Promise<Pokemon> {

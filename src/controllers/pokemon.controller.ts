@@ -34,8 +34,10 @@ export class PokemonController {
       },
     },
   })
-  async find(): Promise<Pokemon[]> {
-    return this.pokemonService.findAll();
+  async find(
+    @param.query.string('name') name?: string,
+  ): Promise<Pokemon[]> {
+    return this.pokemonService.findAll({name});
   }
 
   @get('/pokemon/{id}')
