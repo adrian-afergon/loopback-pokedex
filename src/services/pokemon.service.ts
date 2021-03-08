@@ -16,12 +16,13 @@ export class PokemonService {
     public pokemonRepository: PokemonRepository,
   ) {}
 
-  findAll({name, type}: PokemonQueryParams): Promise<Pokemon[]> {
-    return name || type
+  findAll({name, type, favourite}: PokemonQueryParams): Promise<Pokemon[]> {
+    return name || type || favourite
       ? this.pokemonRepository.find({
           where: {
             name: {like: new RegExp('.*' + name + '.*', 'i')},
             types: type,
+            favourite,
           },
         })
       : this.pokemonRepository.find();
