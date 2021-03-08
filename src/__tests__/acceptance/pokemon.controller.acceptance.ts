@@ -2,6 +2,7 @@ import {Client, expect} from '@loopback/testlab';
 import {PokedexApplication} from '../..';
 import {setupApplication} from './test-helper';
 import {FavouriteActions} from '../../controllers';
+import {Pokemon} from '../../models';
 
 describe('PokemonController', () => {
   let app: PokedexApplication;
@@ -27,8 +28,32 @@ describe('PokemonController', () => {
     });
 
     it('returns a list of Pokemon with partial name', async () => {
-      const res = await client.get('/pokemon?name=saur').expect(200);
+      const partialName = 'saur';
+      const res = await client.get(`/pokemon?name=${partialName}`).expect(200);
       expect(res.body).to.have.length(3);
+      res.body.forEach((pokemon: Pokemon) => {
+        expect(pokemon.name).to.containEql(partialName);
+      });
+    });
+
+    it('returns a list of Pokemon with the given a type', async () => {
+      const type = 'fire';
+      const res = await client.get(`/pokemon?type=${type}`).expect(200);
+      res.body.forEach((pokemon: Pokemon) => {
+        expect(pokemon.types).to.have.containEql(type);
+      });
+    });
+
+    it('returns a list of Pokemon with the given a type and name', async () => {
+      const partialName = 'zard';
+      const type = 'fire';
+      const res = await client
+        .get(`/pokemon?name=${partialName}&type=${type}`)
+        .expect(200);
+      res.body.forEach((pokemon: Pokemon) => {
+        expect(pokemon.name).to.containEql(partialName);
+        expect(pokemon.types).to.have.containEql(type);
+      });
     });
   });
 
