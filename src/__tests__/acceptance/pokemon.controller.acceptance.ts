@@ -56,7 +56,7 @@ describe('PokemonController', () => {
       });
     });
 
-    it('return a list of favourite Pokemon', async () => {
+    it('returns a list of favourite Pokemon', async () => {
       const favouritesPokemon = ['004', '59', '135'];
       await Promise.all(
         favouritesPokemon.map(pokemonId =>
@@ -71,7 +71,7 @@ describe('PokemonController', () => {
       });
     });
 
-    it('return a list of favourite Pokemon by name and type', async () => {
+    it('returns a list of favourite Pokemon by name and type', async () => {
       const givenPokemon = {
         id: '006',
         name: 'Charizard',
@@ -91,6 +91,26 @@ describe('PokemonController', () => {
         expect(pokemon.favourite).to.be.true();
       });
     });
+
+    it('returns the second 25 Pokemon at list', async () => {
+      const page = 2;
+      const limit = 25;
+      const res = await client
+        .get(`/pokemon?page=${page}&limit=${limit}`)
+        .expect(200);
+      expect(res.body).length(25);
+      expect(res.body[0].id).to.eql('026');
+    });
+
+    it('the default list when page number is lower than 1', async () => {
+      const page = 0;
+      const limit = 25;
+      const res = await client
+        .get(`/pokemon?page=${page}&limit=${limit}`)
+        .expect(200);
+      expect(res.body).length(151);
+    });
+
   });
 
   describe('invokes GET /pokemon/{id}', () => {
