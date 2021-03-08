@@ -145,7 +145,7 @@ describe('PokemonController', () => {
     });
   });
 
-  describe('invoice PUT /pokemon/{id}/favourite/{action}', () => {
+  describe('invokes PUT /pokemon/{id}/favourite/{action}', () => {
     it('mark the given pokemon as favourite', async () => {
       const pokemonId = '001';
       await client
