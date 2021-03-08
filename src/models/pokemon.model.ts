@@ -97,6 +97,11 @@ export class Pokemon extends Entity {
   })
   previousEvolutions?: object;
 
+  @property({
+    type: 'boolean',
+  })
+  favourite?: boolean;
+
   [prop: string]: string | number | object | boolean | undefined;
 
   constructor(data?: Partial<Pokemon>) {

@@ -55,6 +55,42 @@ describe('PokemonController', () => {
         expect(pokemon.types).to.have.containEql(type);
       });
     });
+
+    it('return a list of favourite Pokemon', async () => {
+      const favouritesPokemon = ['004', '59', '135'];
+      await Promise.all(
+        favouritesPokemon.map(pokemonId =>
+          client.put(
+            `/pokemon/${pokemonId}/favourite/${FavouriteActions.Mark}`,
+          ),
+        ),
+      );
+      const res = await client.get(`/pokemon?favourite=true`).expect(200);
+      res.body.forEach((pokemon: Pokemon) => {
+        expect(pokemon.favourite).to.be.true();
+      });
+    });
+
+    it('return a list of favourite Pokemon by name and type', async () => {
+      const givenPokemon = {
+        id: '006',
+        name: 'Charizard',
+        type: 'fire',
+      };
+      await client.put(
+        `/pokemon/${givenPokemon.id}/favourite/${FavouriteActions.Mark}`,
+      );
+      const res = await client
+        .get(
+          `/pokemon?name=${givenPokemon.name}&type=${givenPokemon.type}&favourite=true`,
+        )
+        .expect(200);
+      res.body.forEach((pokemon: Pokemon) => {
+        expect(pokemon.name).to.containEql(givenPokemon.name);
+        expect(pokemon.types).to.have.containEql(givenPokemon.type);
+        expect(pokemon.favourite).to.be.true();
+      });
+    });
   });
 
   describe('invokes GET /pokemon/{id}', () => {
