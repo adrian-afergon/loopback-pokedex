@@ -1,4 +1,4 @@
-import {Filter, FilterExcludingWhere, repository} from '@loopback/repository';
+import {EntityNotFoundError, FilterExcludingWhere} from '@loopback/repository';
 import {
   param,
   get,
@@ -8,7 +8,8 @@ import {
   put,
 } from '@loopback/rest';
 import {Pokemon} from '../models';
-import {PokemonRepository} from '../repositories';
+import {service} from '@loopback/core';
+import {PokemonService} from '../services';
 
 export enum FavouriteActions {
   Mark = 'mark',
@@ -17,8 +18,8 @@ export enum FavouriteActions {
 
 export class PokemonController {
   constructor(
-    @repository(PokemonRepository)
-    public pokemonRepository: PokemonRepository,
+    @service(PokemonService)
+    public pokemonService: PokemonService,
   ) {}
 
   @get('/pokemon')
@@ -33,10 +34,8 @@ export class PokemonController {
       },
     },
   })
-  async find(
-    @param.filter(Pokemon) filter?: Filter<Pokemon>,
-  ): Promise<Pokemon[]> {
-    return this.pokemonRepository.find(filter);
+  async find(): Promise<Pokemon[]> {
+    return this.pokemonService.findAll();
   }
 
   @get('/pokemon/{id}')
@@ -53,11 +52,14 @@ export class PokemonController {
     @param.filter(Pokemon, {exclude: 'where'})
     filter?: FilterExcludingWhere<Pokemon>,
   ): Promise<Pokemon> {
-    const pokemon = await this.pokemonRepository.findOne({where: {id}});
-    if (pokemon) {
-      return pokemon;
-    } else {
-      throw new HttpErrors.NotFound();
+    try {
+      return await this.pokemonService.findById(id);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new HttpErrors.NotFound();
+      } else {
+        throw new HttpErrors.InternalServerError();
+      }
     }
   }
 
@@ -75,14 +77,14 @@ export class PokemonController {
     @param.filter(Pokemon, {exclude: 'where'})
     filter?: FilterExcludingWhere<Pokemon>,
   ): Promise<Pokemon> {
-    const nameInsensitiveCase = new RegExp(name, 'i');
-    const pokemon = await this.pokemonRepository.findOne({
-      where: {name: {like: nameInsensitiveCase}},
-    });
-    if (pokemon) {
-      return pokemon;
-    } else {
-      throw new HttpErrors.NotFound();
+    try {
+      return await this.pokemonService.findByName(name);
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new HttpErrors.NotFound();
+      } else {
+        throw new HttpErrors.InternalServerError();
+      }
     }
   }
 
@@ -100,16 +102,18 @@ export class PokemonController {
     ) {
       throw new HttpErrors.NotFound();
     }
-    const pokemon = await this.pokemonRepository.findOne({where: {id}});
-    // we handle it in two difference conditions in order to improve the performance
-    if (!pokemon) {
-      throw new HttpErrors.NotFound();
+    try {
+      if (action === FavouriteActions.Mark) {
+        await this.pokemonService.markFavourite(id);
+      } else {
+        await this.pokemonService.unmarkFavourite(id);
+      }
+    } catch (error) {
+      if (error instanceof EntityNotFoundError) {
+        throw new HttpErrors.NotFound();
+      } else {
+        throw new HttpErrors.InternalServerError();
+      }
     }
-    await this.pokemonRepository.update(
-      new Pokemon({
-        ...pokemon,
-        favourite: Boolean(action === FavouriteActions.Mark),
-      }),
-    );
   }
 }
