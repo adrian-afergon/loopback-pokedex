@@ -1,8 +1,4 @@
-import {
-  EntityNotFoundError,
-  Filter,
-  FilterExcludingWhere,
-} from '@loopback/repository';
+import {EntityNotFoundError, FilterExcludingWhere} from '@loopback/repository';
 import {
   param,
   get,
@@ -38,10 +34,8 @@ export class PokemonController {
       },
     },
   })
-  async find(
-    @param.filter(Pokemon) filter?: Filter<Pokemon>,
-  ): Promise<Pokemon[]> {
-    return this.pokemonService.findAll(filter);
+  async find(): Promise<Pokemon[]> {
+    return this.pokemonService.findAll();
   }
 
   @get('/pokemon/{id}')

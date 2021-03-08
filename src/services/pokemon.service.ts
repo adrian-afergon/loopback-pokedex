@@ -1,7 +1,13 @@
 import {injectable, BindingScope} from '@loopback/core';
-import {EntityNotFoundError, Filter, repository} from '@loopback/repository';
+import {EntityNotFoundError, repository} from '@loopback/repository';
 import {PokemonRepository} from '../repositories';
 import {Pokemon} from '../models';
+
+interface PokemonQueryParams {
+  name?: string;
+  type?: string;
+  favourite?: boolean;
+}
 
 @injectable({scope: BindingScope.TRANSIENT})
 export class PokemonService {
@@ -10,8 +16,8 @@ export class PokemonService {
     public pokemonRepository: PokemonRepository,
   ) {}
 
-  findAll(filter?: Filter<Pokemon>): Promise<Pokemon[]> {
-    return this.pokemonRepository.find(filter);
+  findAll(filter?: PokemonQueryParams): Promise<Pokemon[]> {
+    return this.pokemonRepository.find();
   }
 
   async findById(id: string): Promise<Pokemon> {
