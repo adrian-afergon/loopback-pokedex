@@ -38,8 +38,17 @@ export class PokemonController {
     @param.query.string('name') name?: string,
     @param.query.string('type') type?: string,
     @param.query.boolean('favourite') favourite?: boolean,
+    @param.query.number('page') page?: number,
+    @param.query.number('limit') limit?: number,
   ): Promise<Pokemon[]> {
-    return this.pokemonService.findAll({name, type, favourite});
+    return this.pokemonService.findAll({
+      name,
+      type,
+      favourite,
+      page,
+      limit,
+      hasPagination: Boolean(page && limit),
+    });
   }
 
   @get('/pokemon/{id}')

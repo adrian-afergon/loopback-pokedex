@@ -7,6 +7,9 @@ interface PokemonQueryParams {
   name?: string;
   type?: string;
   favourite?: boolean;
+  hasPagination?: boolean;
+  page?: number;
+  limit?: number;
 }
 
 @injectable({scope: BindingScope.TRANSIENT})
@@ -16,14 +19,26 @@ export class PokemonService {
     public pokemonRepository: PokemonRepository,
   ) {}
 
-  findAll({name, type, favourite}: PokemonQueryParams): Promise<Pokemon[]> {
-    return name || type || favourite
+  findAll({
+    name,
+    type,
+    favourite,
+    page = 0,
+    limit,
+    hasPagination,
+  }: PokemonQueryParams): Promise<Pokemon[]> {
+    return name || type || favourite || hasPagination
       ? this.pokemonRepository.find({
           where: {
-            name: {like: new RegExp('.*' + name + '.*', 'i')},
+            name: name
+              ? {like: new RegExp('.*' + name + '.*', 'i')}
+              : undefined,
             types: type,
             favourite,
           },
+          skip: limit ? (page - 1) * limit : undefined,
+          limit: limit,
+          order: ['id ASC'],
         })
       : this.pokemonRepository.find();
   }
