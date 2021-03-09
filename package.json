@@ -21,9 +21,11 @@
     "prettier:fix": "npm run prettier:cli -- --write",
     "eslint": "lb-eslint --report-unused-disable-directives .",
     "eslint:fix": "npm run eslint -- --fix",
-    "pretest": "npm run rebuild",
+    "ci:up": "docker-compose up database-test mongoimport-test &",
+    "pretest": "npm run ci:up && npm run rebuild",
     "test": "lb-mocha --allow-console-logs \"dist/__tests__\"",
-    "posttest": "npm run lint",
+    "ci:stop": "docker-compose stop database-test &",
+    "posttest": "npm run ci:stop && npm run lint",
     "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
     "docker:build": "docker build -t loopback-pokedex .",
     "docker:run": "docker run -p 3000:3000 -d loopback-pokedex",
@@ -35,7 +37,7 @@
     "prestart": "npm run rebuild",
     "start": "node -r source-map-support/register .",
     "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
-    "create:database": "docker-compose up database &"
+    "create:database": "docker-compose up database mongoimport &"
   },
   "repository": {
     "type": "git",
