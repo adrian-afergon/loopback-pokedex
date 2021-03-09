@@ -1,15 +1,18 @@
+import * as dotenv from 'dotenv';
 import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {juggler} from '@loopback/repository';
+
+dotenv.config();
 
 const config = {
   name: 'mongo',
   connector: 'mongodb',
-  url: 'mongodb://pokemon:pokemon@localhost:27017/pokemon',
-  host: 'localhost',
-  port: 27017,
-  user: 'pokemon',
-  password: 'pokemon',
-  database: 'pokemon',
+  url: process.env.MONGODB_URL,
+  host: process.env.MONGODB_HOST,
+  port: process.env.MONGODB_PORT,
+  user: process.env.MONGODB_USER,
+  password: process.env.MONGODB_PASSWORD,
+  database: process.env.MONGODB_DATABASE,
   useNewUrlParser: true,
 };
 

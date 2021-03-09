@@ -3,6 +3,29 @@
 This application is generated using [LoopBack 4 CLI](https://loopback.io/doc/en/lb4/Command-line-interface.html) with the
 [initial project layout](https://loopback.io/doc/en/lb4/Loopback-application-layout.html).
 
+## Environment variables
+
+First you will need to define your environment variables. For a development proposal you can create a `.env` file with the following structure:
+```
+# MONGO_DEFINITION
+MONGO_INITDB_DATABASE= #database name 
+MONGO_INITDB_ROOT_USERNAME= #root username
+MONGO_INITDB_ROOT_PASSWORD= #root password
+
+# MONGO_REMOTE_CONNECTION
+MONGODB_URL= #url to connect to the database
+MONGODB_HOST= #host to connect to the database
+MONGODB_PORT= #database port
+MONGODB_USER= #username for connection to the database
+MONGODB_PASSWORD= #password for connection to the database
+MONGODB_DATABASE= #databa name
+```
+
+or you can execute a copy of the sample:
+```
+cp .env.sample .env
+```
+
 ## Pre-requisites
 To run this project successfully you will need to have docker-compose installed. To make it works you only need to execute the folowing command:
 ```
