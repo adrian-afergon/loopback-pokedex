@@ -10,6 +10,17 @@ describe('PokemonController', () => {
 
   before('setupApplication', async () => {
     ({app, client} = await setupApplication());
+    app.bind('datasources.config.mongo').to({
+      name: 'mongo',
+      connector: 'mongodb',
+      url: 'mongodb://pokemon:pokemon@localhost:27017/pokemon',
+      host: 'localhost',
+      port: '27018',
+      user: 'pokemon',
+      password: 'pokemon',
+      database: 'pokemon',
+      useNewUrlParser: true,
+    });
   });
 
   after(async () => {
