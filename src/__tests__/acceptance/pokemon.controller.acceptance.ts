@@ -110,7 +110,6 @@ describe('PokemonController', () => {
         .expect(200);
       expect(res.body).length(151);
     });
-
   });
 
   describe('invokes GET /pokemon/{id}', () => {
@@ -178,6 +177,13 @@ describe('PokemonController', () => {
       await client
         .put(`/pokemon/${pokemonId}/favourite/non-existent-action`)
         .expect(404);
+    });
+  });
+
+  describe('invokes GET /pokemon/types', () => {
+    it('returns a list of the pokemon types', async () => {
+      const res = await client.get('/pokemon/types').expect(200);
+      expect(res.body).to.have.length(17);
     });
   });
 });
