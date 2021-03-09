@@ -62,6 +62,26 @@ export class PokemonService {
     return pokemon;
   }
 
+  private static removeDuplicatedTypes(
+    currentTypes: string[],
+    typesToAdd: string[],
+  ) {
+    return [...new Set([...currentTypes, ...typesToAdd])];
+  }
+
+  async findTypes(): Promise<string[]> {
+    // probably we can find a better way to do it
+    const results = await this.pokemonRepository.find(
+      {fields: {types: true}},
+      {},
+    );
+    return results.reduce(
+      (list: string[], {types}) =>
+        PokemonService.removeDuplicatedTypes(list, types),
+      [],
+    );
+  }
+
   async markFavourite(id: string) {
     const pokemon = await this.findById(id);
     await this.pokemonRepository.update(
