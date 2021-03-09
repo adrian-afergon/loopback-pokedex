@@ -51,6 +51,19 @@ export class PokemonController {
     });
   }
 
+  @get('/pokemon/types')
+  @response(200, {
+    description: 'List of pokemon types',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(Pokemon, {includeRelations: true}),
+      },
+    },
+  })
+  async findTypes(): Promise<string[]> {
+    return this.pokemonService.findTypes();
+  }
+
   @get('/pokemon/{id}')
   @response(200, {
     description: 'Pokemon model instance',
