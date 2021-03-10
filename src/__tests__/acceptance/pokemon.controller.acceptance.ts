@@ -3,13 +3,29 @@ import {PokedexApplication} from '../..';
 import {setupApplication} from './test-helper';
 import {FavouriteActions} from '../../controllers';
 import {Pokemon} from '../../models';
+import {PokemonRepository} from '../../repositories';
+import {MongoDataSource} from '../../datasources';
 
 describe('PokemonController', () => {
   let app: PokedexApplication;
   let client: Client;
+  let pokemonRepository: PokemonRepository;
 
   before('setupApplication', async () => {
     ({app, client} = await setupApplication());
+    const config = {
+      name: 'mongo',
+      connector: 'mongodb',
+      url: 'mongodb://pokemon:pokemon@localhost:27017/pokemon',
+      host: 'localhost',
+      port: '27018',
+      user: 'pokemon',
+      password: 'pokemon',
+      database: 'pokemon',
+      useNewUrlParser: true,
+    };
+    app.bind('datasources.config.mongo').to(config);
+    pokemonRepository = new PokemonRepository(new MongoDataSource(config));
   });
 
   after(async () => {
@@ -56,42 +72,6 @@ describe('PokemonController', () => {
       });
     });
 
-    it('returns a list of favourite Pokemon', async () => {
-      const favouritesPokemon = ['004', '59', '135'];
-      await Promise.all(
-        favouritesPokemon.map(pokemonId =>
-          client.put(
-            `/pokemon/${pokemonId}/favourite/${FavouriteActions.Mark}`,
-          ),
-        ),
-      );
-      const res = await client.get(`/pokemon?favourite=true`).expect(200);
-      res.body.forEach((pokemon: Pokemon) => {
-        expect(pokemon.favourite).to.be.true();
-      });
-    });
-
-    it('returns a list of favourite Pokemon by name and type', async () => {
-      const givenPokemon = {
-        id: '006',
-        name: 'Charizard',
-        type: 'fire',
-      };
-      await client.put(
-        `/pokemon/${givenPokemon.id}/favourite/${FavouriteActions.Mark}`,
-      );
-      const res = await client
-        .get(
-          `/pokemon?name=${givenPokemon.name}&type=${givenPokemon.type}&favourite=true`,
-        )
-        .expect(200);
-      res.body.forEach((pokemon: Pokemon) => {
-        expect(pokemon.name).to.containEql(givenPokemon.name);
-        expect(pokemon.types).to.have.containEql(givenPokemon.type);
-        expect(pokemon.favourite).to.be.true();
-      });
-    });
-
     it('returns the second 25 Pokemon at list', async () => {
       const page = 2;
       const limit = 25;
@@ -109,6 +89,48 @@ describe('PokemonController', () => {
         .get(`/pokemon?page=${page}&limit=${limit}`)
         .expect(200);
       expect(res.body).length(151);
+    });
+
+    describe('query favourites', () => {
+      beforeEach(async () => {
+        await pokemonRepository.updateAll({favourite: false});
+      });
+
+      it('returns a list of favourite Pokemon', async () => {
+        const favouritesPokemon = ['004', '59', '135'];
+        await Promise.all(
+          favouritesPokemon.map(pokemonId =>
+            client.put(
+              `/pokemon/${pokemonId}/favourite/${FavouriteActions.Mark}`,
+            ),
+          ),
+        );
+        const res = await client.get(`/pokemon?favourite=true`).expect(200);
+        res.body.forEach((pokemon: Pokemon) => {
+          expect(pokemon.favourite).to.be.true();
+        });
+      });
+
+      it('returns a list of favourite Pokemon by name and type', async () => {
+        const givenPokemon = {
+          id: '006',
+          name: 'Charizard',
+          type: 'fire',
+        };
+        await client.put(
+          `/pokemon/${givenPokemon.id}/favourite/${FavouriteActions.Mark}`,
+        );
+        const res = await client
+          .get(
+            `/pokemon?name=${givenPokemon.name}&type=${givenPokemon.type}&favourite=true`,
+          )
+          .expect(200);
+        res.body.forEach((pokemon: Pokemon) => {
+          expect(pokemon.name).to.containEql(givenPokemon.name);
+          expect(pokemon.types).to.have.containEql(givenPokemon.type);
+          expect(pokemon.favourite).to.be.true();
+        });
+      });
     });
   });
 
@@ -145,6 +167,10 @@ describe('PokemonController', () => {
   });
 
   describe('invokes PUT /pokemon/{id}/favourite/{action}', () => {
+    beforeEach(async () => {
+      await pokemonRepository.updateAll({favourite: false});
+    });
+
     it('mark the given pokemon as favourite', async () => {
       const pokemonId = '001';
       await client
