@@ -1,17 +1,13 @@
 import {injectable, BindingScope} from '@loopback/core';
 import {repository} from '@loopback/repository';
-import {PokemonRepository} from '../repositories';
+import {PokemonFindAllParams, PokemonRepository} from '../repositories';
 import {Pokemon} from '../models';
 import {NotFoundError} from './not-found.error';
 
-interface PokemonQueryParams {
-  name?: string;
-  type?: string;
-  favourite?: boolean;
-  hasPagination?: boolean;
+type PokemonQueryParams = Omit<PokemonFindAllParams, 'skip'> & {
   page?: number;
-  limit?: number;
-}
+  hasPagination?: boolean;
+};
 
 @injectable({scope: BindingScope.TRANSIENT})
 export class PokemonService {
@@ -20,26 +16,28 @@ export class PokemonService {
     public pokemonRepository: PokemonRepository,
   ) {}
 
+  private static elementsToSkip(
+    limit: number | undefined,
+    page = 0,
+  ): number | undefined {
+    return limit ? (page - 1) * limit : undefined;
+  }
+
   findAll({
     name,
     type,
     favourite,
-    page = 0,
+    page,
     limit,
     hasPagination,
   }: PokemonQueryParams): Promise<Pokemon[]> {
     return name || type || favourite || hasPagination
-      ? this.pokemonRepository.find({
-          where: {
-            name: name
-              ? {like: new RegExp('.*' + name + '.*', 'i')}
-              : undefined,
-            types: type,
-            favourite,
-          },
-          skip: limit ? (page - 1) * limit : undefined,
-          limit: limit,
-          order: ['id ASC'],
+      ? this.pokemonRepository.findByParams({
+          name,
+          type,
+          favourite,
+          skip: PokemonService.elementsToSkip(limit, page),
+          limit,
         })
       : this.pokemonRepository.find();
   }
