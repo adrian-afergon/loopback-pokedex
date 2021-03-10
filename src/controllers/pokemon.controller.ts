@@ -1,4 +1,3 @@
-import {EntityNotFoundError, FilterExcludingWhere} from '@loopback/repository';
 import {
   param,
   get,
@@ -10,6 +9,7 @@ import {
 import {Pokemon} from '../models';
 import {service} from '@loopback/core';
 import {PokemonService} from '../services';
+import {NotFoundError} from '../services/not-found.error';
 
 export enum FavouriteActions {
   Mark = 'mark',
@@ -75,13 +75,11 @@ export class PokemonController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(Pokemon, {exclude: 'where'})
-    filter?: FilterExcludingWhere<Pokemon>,
   ): Promise<Pokemon> {
     try {
       return await this.pokemonService.findById(id);
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
+      if (error instanceof NotFoundError) {
         throw new HttpErrors.NotFound();
       } else {
         throw new HttpErrors.InternalServerError();
@@ -100,13 +98,11 @@ export class PokemonController {
   })
   async findByName(
     @param.path.string('name') name: string,
-    @param.filter(Pokemon, {exclude: 'where'})
-    filter?: FilterExcludingWhere<Pokemon>,
   ): Promise<Pokemon> {
     try {
       return await this.pokemonService.findByName(name);
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
+      if (error instanceof NotFoundError) {
         throw new HttpErrors.NotFound();
       } else {
         throw new HttpErrors.InternalServerError();
@@ -135,7 +131,7 @@ export class PokemonController {
         await this.pokemonService.unmarkFavourite(id);
       }
     } catch (error) {
-      if (error instanceof EntityNotFoundError) {
+      if (error instanceof NotFoundError) {
         throw new HttpErrors.NotFound();
       } else {
         throw new HttpErrors.InternalServerError();

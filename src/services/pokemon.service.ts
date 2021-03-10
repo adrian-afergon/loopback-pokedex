@@ -1,7 +1,8 @@
 import {injectable, BindingScope} from '@loopback/core';
-import {EntityNotFoundError, repository} from '@loopback/repository';
+import {repository} from '@loopback/repository';
 import {PokemonRepository} from '../repositories';
 import {Pokemon} from '../models';
+import {NotFoundError} from './not-found.error';
 
 interface PokemonQueryParams {
   name?: string;
@@ -46,7 +47,7 @@ export class PokemonService {
   async findById(id: string): Promise<Pokemon> {
     const pokemon = await this.pokemonRepository.findOne({where: {id}});
     if (!pokemon) {
-      throw new EntityNotFoundError(Pokemon, id);
+      throw new NotFoundError(`Pokemon with id ${id} has not been found`);
     }
     return pokemon;
   }
@@ -57,7 +58,7 @@ export class PokemonService {
       where: {name: {like: nameInsensitiveCase}},
     });
     if (!pokemon) {
-      throw new EntityNotFoundError(Pokemon, name);
+      throw new NotFoundError(`Pokemon with name ${name} has not been found`);
     }
     return pokemon;
   }
