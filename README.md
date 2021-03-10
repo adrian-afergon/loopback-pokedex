@@ -29,15 +29,15 @@ cp .env.sample .env
 ## Pre-requisites
 To run this project successfully you will need to have docker-compose installed. To make it works you only need to execute the folowing command:
 ```
-docker-compose up
+docker-compose up database mongoimport pokemon
 ```
 It will deploy the *database* with the defined list of pokemons at `./data.pokemon.json` and runs the *application*.
 If you want to skip the application at `docker-compose`, you can also run:
 ```
-docker-compose up mongoimport database
+docker-compose up database mongoimport
 ```
 
-**IMPORTANT:** Keep in mind that the current database has a default configuration, so if you want to use it on production you must reconfigure it, enable authentication and change the default username and password.
+**IMPORTANT:** Keep in mind the current database has a default configuration, so if you want to use it on production you must reconfigure it, enable authentication and change the default username and password.
 
 ## Install dependencies
 
@@ -102,6 +102,7 @@ npm run lint:fix
 ```sh
 npm test
 ```
+Tests will turn up an specific environment for this proposal. This environment will be stopped once the tests finish.
 
 ## What's next
 
