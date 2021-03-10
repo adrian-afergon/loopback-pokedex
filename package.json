@@ -1,6 +1,6 @@
 {
   "name": "loopback-pokedex",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "This project is an small api-rest to display and search the first 151 pokémon and their information using loopback framework for it",
   "keywords": [
     "loopback-application",
