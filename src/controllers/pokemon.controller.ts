@@ -108,11 +108,15 @@ export class PokemonController {
 
   @put('/pokemon/{id}/favourite/{action}')
   @response(204, {
-    description: 'Pokemon PUT success',
+    description: 'Update pokemon favourite status PUT success',
   })
   async markAsFavouriteById(
     @param.path.string('id') id: string,
-    @param.path.string('action') action: FavouriteActions,
+    @param.path.string('action', [
+      FavouriteActions.Mark,
+      FavouriteActions.Unmark,
+    ])
+    action: FavouriteActions,
   ): Promise<void> {
     if (
       action !== FavouriteActions.Mark &&
