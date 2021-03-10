@@ -73,9 +73,7 @@ export class PokemonController {
       },
     },
   })
-  async findById(
-    @param.path.string('id') id: string,
-  ): Promise<Pokemon> {
+  async findById(@param.path.string('id') id: string): Promise<Pokemon> {
     try {
       return await this.pokemonService.findById(id);
     } catch (error) {
@@ -96,9 +94,7 @@ export class PokemonController {
       },
     },
   })
-  async findByName(
-    @param.path.string('name') name: string,
-  ): Promise<Pokemon> {
+  async findByName(@param.path.string('name') name: string): Promise<Pokemon> {
     try {
       return await this.pokemonService.findByName(name);
     } catch (error) {
